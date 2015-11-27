@@ -29,6 +29,23 @@ var trackvizClass = (function () {
             self.gpxTrack.on('click', function (e) {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
+            /** experimental */
+            var trackArr = [];
+            self.trackPoints.forEach(function (e) {
+                trackArr.push([e.lat, e.lng]);
+            });
+            console.log(trackArr);
+            var Marker = L.Marker.movingMarker(trackArr, 3000, {
+                icon: L.divIcon({
+                    className: 'leaflet-div-icon showpoint',
+                    html: 'AY',
+                })
+            }).addTo(self.map);
+            Marker.once('click', function () {
+                console.log('start');
+                Marker.start();
+            });
+            /********************* */
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
         }).addTo(self.map);
     }

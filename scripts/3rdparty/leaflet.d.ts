@@ -2827,6 +2827,7 @@ declare namespace L {
           * an options object.
           */
         new(latlng: LatLngExpression, options?: MarkerOptions): Marker;
+        movingMarker: any;
     };
 
     export interface Marker extends ILayer, IEventPowered<Marker> {
