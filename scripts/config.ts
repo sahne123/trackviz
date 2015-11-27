@@ -10,7 +10,7 @@ class configClass {
 	public constructor() {
 		
 		this.mapId = "map";
-		this.gpxFile = "data/track.gpx";
+		this.gpxFile = "data/track.min.gpx";
 		
 		this.boundOptions = {
 			paddingBottomRight: L.point(200,10), 
