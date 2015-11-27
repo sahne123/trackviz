@@ -4,7 +4,7 @@ class configClass {
 	public gpxFile: string;
 	
 	public boundOptions: L.Map.FitBoundsOptions;
-	public labelOptions: L.LabelOptions;
+	public trackLabelOptions: L.LabelOptions;
 	public subTrackOptions: L.PolylineOptions;
 	
 	public constructor() {
@@ -17,7 +17,7 @@ class configClass {
 			paddingTopLeft: L.point(10,10),
 		}; 
 		
-		this.labelOptions = {
+		this.trackLabelOptions = {
 			className: "trackTooltip",
 			direction: "auto",
 			/* offset: []  */

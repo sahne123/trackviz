@@ -15,9 +15,20 @@ var trackvizClass = (function () {
             }).addTo(map);
             $.grep(self.gpxTrack.getLayers().shift().getLayers(), function (e) {
                 return typeof e.getLatLngs == "function";
+            }).shift().bindLabel("", conf.trackLabelOptions);
+            self.gpxTrack.on('mousemove', function (e) {
+                var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
+                //TODO: refactor time formating, take care of timezone support
+                var date = trackPoint.meta.time;
+                var month = date.getMonth() + 1;
+                $(".trackTooltip").html('<p>Time: ' +
+                    date.getDate() + '.' + month + '.' + date.getFullYear() +
+                    ' ' + date.getHours() + ':' + date.getMinutes() +
+                    '</p><p>Height: ' + trackPoint.meta.ele + '</p>');
             });
-            self.gpxTrack.on('mousemove', self.updateTooltip);
-            self.gpxTrack.on('click', self.moveToMousePosition);
+            self.gpxTrack.on('click', function (e) {
+                self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
+            });
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
         }).addTo(self.map);
     }
@@ -59,7 +70,7 @@ var trackvizClass = (function () {
         }
         self.subTrack = new L.FeatureGroup([
             new L.Polyline(track, conf.subTrackOptions)
-        ]).bindLabel("", conf.labelOptions).addTo(self.map);
+        ]).bindLabel("", conf.trackLabelOptions).addTo(self.map);
     };
     trackvizClass.prototype.getTrackPointByLatlng = function (latlng) {
         var self = this;
@@ -79,21 +90,6 @@ var trackvizClass = (function () {
             }
         });
         return nearest;
-    };
-    trackvizClass.prototype.moveToMousePosition = function (e) {
-        var self = this;
-        self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
-    };
-    trackvizClass.prototype.updateTooltip = function (e) {
-        var self = this;
-        var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
-        //TODO: refactor time formating, take care of timezone support
-        var date = trackPoint.meta.time;
-        var month = date.getMonth() + 1;
-        $(".trackTooltip").html('<p>Time: ' +
-            date.getDate() + '.' + month + '.' + date.getFullYear() +
-            ' ' + date.getHours() + ':' + date.getMinutes() +
-            '</p><p>Height: ' + trackPoint.meta.ele + '</p>');
     };
     return trackvizClass;
 })();

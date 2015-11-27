@@ -1,15 +1,16 @@
 {
   "name": "map",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "sahne123",
   "devDependencies": {
     "grunt": "~0.4.5",
-    "typescript": "~0.8.3",
-    "grunt-typescript": "~0.8.0",
-    "grunt-contrib-watch": "~0.3.1",
-    "grunt-contrib-connect": "~0.2.0",
-    "grunt-open": "~0.2.0",
     "grunt-contrib-concat": "~0.5.1",
-    "grunt-contrib-uglify": "~0.11.0"
+    "grunt-contrib-connect": "~0.2.0",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-uglify": "~0.11.0",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-open": "~0.2.0",
+    "grunt-typescript": "~0.8.0",
+    "typescript": "~0.8.3"
   }
 }

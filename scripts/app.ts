@@ -7,7 +7,6 @@
 /// <reference path="helper.ts" />
 /// <reference path="trackviz.ts" />
 
-var foo = 'bar';
 var conf = new configClass();
 var helper = new helperClass();
 
@@ -23,4 +22,6 @@ $("#run").click( function(){
 	trackviz.moveTo(trackviz.trackPoints[trackviz.trackPoints.length-1]);
 });
 
-$("#pause").click(trackviz.stopMoving);
+$("#pause").click(function(){
+	trackviz.stopMoving();
+});

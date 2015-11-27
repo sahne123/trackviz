@@ -6,7 +6,7 @@ var configClass = (function () {
             paddingBottomRight: L.point(200, 10),
             paddingTopLeft: L.point(10, 10),
         };
-        this.labelOptions = {
+        this.trackLabelOptions = {
             className: "trackTooltip",
             direction: "auto",
         };

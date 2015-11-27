@@ -28,11 +28,24 @@ class trackvizClass {
 			
 			$.grep(self.gpxTrack.getLayers().shift().getLayers(), function(e: any){
 				return typeof e.getLatLngs == "function";
+			}).shift().bindLabel("", conf.trackLabelOptions);
+			
+			self.gpxTrack.on('mousemove', function(e:L.LeafletMouseEvent) {
+				var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
+				//TODO: refactor time formating, take care of timezone support
+				var date = trackPoint.meta.time;
+				var month = date.getMonth()+1;
+				$(".trackTooltip").html(
+					'<p>Time: ' + 
+					date.getDate() + '.' + month + '.' + date.getFullYear() + 
+					' ' + date.getHours() + ':' + date.getMinutes() + 
+					'</p><p>Height: ' + trackPoint.meta.ele + '</p>'
+				);
 			});
-			
-			self.gpxTrack.on('mousemove', self.updateTooltip);
-			self.gpxTrack.on('click', self.moveToMousePosition);
-			
+			self.gpxTrack.on('click', function(e:L.LeafletMouseEvent) {
+				self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
+			});
+					
 			self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
 		}).addTo(self.map);
 	}
@@ -79,7 +92,7 @@ class trackvizClass {
 		}
 		self.subTrack = new L.FeatureGroup([
 			new L.Polyline( track, conf.subTrackOptions)				
-		]).bindLabel("", conf.labelOptions).addTo(self.map);
+		]).bindLabel("", conf.trackLabelOptions).addTo(self.map);
 	}
 	
 	private getTrackPointByLatlng(latlng: L.LatLng) { 
@@ -101,24 +114,5 @@ class trackvizClass {
 			}
 		});
 		return nearest;
-	}
-	
-	public moveToMousePosition(e:L.LeafletMouseEvent) {
-		var self = this;
-		self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
-	}
-
-	public updateTooltip(e:L.LeafletMouseEvent) {
-		var self = this;
-		var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
-		//TODO: refactor time formating, take care of timezone support
-		var date = trackPoint.meta.time;
-		var month = date.getMonth()+1;
-		$(".trackTooltip").html(
-			'<p>Time: ' + 
-			date.getDate() + '.' + month + '.' + date.getFullYear() + 
-			' ' + date.getHours() + ':' + date.getMinutes() + 
-			'</p><p>Height: ' + trackPoint.meta.ele + '</p>'
-		);
 	}
 }
