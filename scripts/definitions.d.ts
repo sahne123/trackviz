@@ -1,4 +1,4 @@
-interface trackPoint {
+declare interface trackPoint {
 	lat: number;
 	lng: number;
 	meta: {
