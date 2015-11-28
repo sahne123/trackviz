@@ -320,6 +320,90 @@ L.Marker.MovingMarker = L.Marker.extend({
 L.Marker.movingMarker = function (latlngs, duration, options) {
     return new L.Marker.MovingMarker(latlngs, duration, options);
 };
+;/*!
+ * Leaflet.extra-markers
+ * Custom Markers for Leaflet JS based on Awesome Markers
+ * Leaflet ExtraMarkers
+ * https://github.com/coryasilva/Leaflet.ExtraMarkers/
+ * @author coryasilva <https://github.com/coryasilva>
+ * @version 1.1.0
+ */
+(function(window, document, undefined) {
+    "use strict";
+    L.ExtraMarkers = {};
+    L.ExtraMarkers.version = "1.0.1";
+    L.ExtraMarkers.Icon = L.Icon.extend({
+        options: {
+            iconSize: [ 35, 45 ],
+            iconAnchor: [ 17, 42 ],
+            popupAnchor: [ 1, -32 ],
+            shadowAnchor: [ 10, 12 ],
+            shadowSize: [ 36, 16 ],
+            className: "extra-marker",
+            prefix: "",
+            extraClasses: "",
+            shape: "circle",
+            icon: "",
+            markerColor: "red",
+            iconColor: "#fff",
+            number: ""
+        },
+        initialize: function(options) {
+            options = L.Util.setOptions(this, options);
+        },
+        createIcon: function() {
+            var div = document.createElement("div"), options = this.options;
+            if (options.icon) {
+                div.innerHTML = this._createInner();
+            }
+            if (options.bgPos) {
+                div.style.backgroundPosition = -options.bgPos.x + "px " + -options.bgPos.y + "px";
+            }
+            this._setIconStyles(div, options.shape + "-" + options.markerColor);
+            return div;
+        },
+        _createInner: function() {
+            var iconClass, iconSpinClass = "", iconColorClass = "", iconColorStyle = "", iconNumber = "", options = this.options;
+            if (options.iconColor) {
+                iconColorStyle = "style='color: " + options.iconColor + "' ";
+            }
+            if (options.number) {
+                iconNumber = "number='" + options.number + "' ";
+            }
+            return "<i " + iconNumber + iconColorStyle + "class='" + options.extraClasses + " " + options.prefix + " " + options.icon + "'></i>";
+        },
+        _setIconStyles: function(img, name) {
+            var options = this.options, size = L.point(options[name === "shadow" ? "shadowSize" : "iconSize"]), anchor, leafletName;
+            if (name === "shadow") {
+                anchor = L.point(options.shadowAnchor || options.iconAnchor);
+                leafletName = "shadow";
+            } else {
+                anchor = L.point(options.iconAnchor);
+                leafletName = "icon";
+            }
+            if (!anchor && size) {
+                anchor = size.divideBy(2, true);
+            }
+            img.className = "leaflet-marker-" + leafletName + " extra-marker-" + name + " " + options.className;
+            if (anchor) {
+                img.style.marginLeft = -anchor.x + "px";
+                img.style.marginTop = -anchor.y + "px";
+            }
+            if (size) {
+                img.style.width = size.x + "px";
+                img.style.height = size.y + "px";
+            }
+        },
+        createShadow: function() {
+            var div = document.createElement("div");
+            this._setIconStyles(div, "shadow");
+            return div;
+        }
+    });
+    L.ExtraMarkers.icon = function(options) {
+        return new L.ExtraMarkers.Icon(options);
+    };
+})(this, document);
 ;var _MAX_POINT_INTERVAL_MS = 30000;
 var _SECOND_IN_MILLIS = 1000;
 var _MINUTE_IN_MILLIS = 60 * _SECOND_IN_MILLIS;
@@ -558,6 +642,12 @@ L.GPX = L.FeatureGroup.extend({
             className: "trackTooltip",
             direction: "auto",
         };
+        this.currentMarkerIconOptions = {
+            icon: "glyphicon-screenshot",
+            prefix: "glyphicon",
+            shape: "square",
+            markerColor: "green-dark",
+        };
         this.subTrackOptions = {
             color: "red",
             opacity: 1,
@@ -565,7 +655,7 @@ L.GPX = L.FeatureGroup.extend({
     }
     return configClass;
 })();
-;;var helperClass = (function () {
+;var helperClass = (function () {
     function helperClass() {
     }
     helperClass.prototype.getDistance = function (lat1, lon1, lat2, lon2) {
@@ -610,10 +700,7 @@ var trackvizClass = (function () {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
             self.currentMarker = L.Marker.movingMarker(self.trackPoints, 3000, {
-                icon: L.divIcon({
-                    className: 'leaflet-div-icon showpoint',
-                    html: 'x',
-                })
+                icon: L.ExtraMarkers.icon(conf.currentMarkerIconOptions),
             }).addTo(self.map);
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
         }).addTo(self.map);
@@ -679,7 +766,8 @@ var trackvizClass = (function () {
 /// <reference path="3rdparty/leaflet.label.d.ts" />
 /// <reference path="3rdparty/leaflet.gpx.d.ts" />
 /// <reference path="3rdparty/leaflet.MovingMarker.d.ts" />
-/// <reference path="definitions.ts" />
+/// <reference path="3rdparty/leaflet.extra-markers.d.ts" />
+/// <reference path="definitions.d.ts" />
 /// <reference path="config.ts" />
 /// <reference path="helper.ts" />
 /// <reference path="trackviz.ts" />

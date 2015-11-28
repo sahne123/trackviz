@@ -10,6 +10,12 @@ var configClass = (function () {
             className: "trackTooltip",
             direction: "auto",
         };
+        this.currentMarkerIconOptions = {
+            icon: "glyphicon-screenshot",
+            prefix: "glyphicon",
+            shape: "square",
+            markerColor: "green-dark",
+        };
         this.subTrackOptions = {
             color: "red",
             opacity: 1,

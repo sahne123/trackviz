@@ -24,10 +24,7 @@ var trackvizClass = (function () {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
             self.currentMarker = L.Marker.movingMarker(self.trackPoints, 3000, {
-                icon: L.divIcon({
-                    className: 'leaflet-div-icon showpoint',
-                    html: 'x',
-                })
+                icon: L.ExtraMarkers.icon(conf.currentMarkerIconOptions),
             }).addTo(self.map);
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
         }).addTo(self.map);

@@ -6,6 +6,7 @@ class configClass {
 	public boundOptions: L.Map.FitBoundsOptions;
 	public trackLabelOptions: L.LabelOptions;
 	public subTrackOptions: L.PolylineOptions;
+	public currentMarkerIconOptions: L.ExtraMarkersOptions;
 	
 	public constructor() {
 		
@@ -20,8 +21,16 @@ class configClass {
 		this.trackLabelOptions = {
 			className: "trackTooltip",
 			direction: "auto",
+			/* noHide: true, */
 			/* offset: []  */
 		};
+		
+		this.currentMarkerIconOptions = {
+			icon: "glyphicon-screenshot",
+			prefix: "glyphicon",
+			shape: "square",
+			markerColor: "green-dark",
+		}
 		
 		this.subTrackOptions = {
 			color: "red",

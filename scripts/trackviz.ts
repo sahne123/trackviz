@@ -42,10 +42,7 @@ class trackvizClass {
 			
 			self.currentMarker = L.Marker.movingMarker(self.trackPoints, 3000, 
 			{
-				icon: L.divIcon({
-					className: 'leaflet-div-icon showpoint',
-					html: 'x',
-				})
+				icon: L.ExtraMarkers.icon(conf.currentMarkerIconOptions),
 			}).addTo(self.map);
 				
 			self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
