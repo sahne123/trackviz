@@ -7,12 +7,6 @@ var trackvizClass = (function () {
         self.gpxTrack = new L.GPX(gpxFile, { async: true });
         self.gpxTrack.on('loaded', function (e) {
             self.trackPoints = self.gpxTrack.get_trackpoints();
-            self.currentMarker = L.marker(self.trackPoints[0], {
-                icon: L.divIcon({
-                    className: 'leaflet-div-icon showpoint',
-                    html: 'x',
-                })
-            }).addTo(map);
             $.grep(self.gpxTrack.getLayers().shift().getLayers(), function (e) {
                 return typeof e.getLatLngs == "function";
             }).shift().bindLabel("", conf.trackLabelOptions);
@@ -29,53 +23,35 @@ var trackvizClass = (function () {
             self.gpxTrack.on('click', function (e) {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
-            /** experimental */
-            var trackArr = [];
-            self.trackPoints.forEach(function (e) {
-                trackArr.push([e.lat, e.lng]);
-            });
-            console.log(trackArr);
-            var Marker = L.Marker.movingMarker(trackArr, 3000, {
+            self.currentMarker = L.Marker.movingMarker(self.trackPoints, 3000, {
                 icon: L.divIcon({
                     className: 'leaflet-div-icon showpoint',
-                    html: 'AY',
+                    html: 'x',
                 })
             }).addTo(self.map);
-            Marker.once('click', function () {
-                console.log('start');
-                Marker.start();
-            });
-            /********************* */
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
         }).addTo(self.map);
     }
-    //TODO: refactor with https://github.com/ewoken/Leaflet.MovingMarker
     trackvizClass.prototype.moveTo = function (destination) {
         var self = this;
-        if (!self.isMoving) {
-            self.isMoving = true;
-            var currentTrackPoint = self.getTrackPointByLatlng(self.currentMarker.getLatLng());
-            var trackPointIndex = self.trackPoints.indexOf(currentTrackPoint);
-            var bBackwards = currentTrackPoint.meta.time > destination.meta.time ? true : false;
-            (function move(bBackwards) {
-                var iteration = bBackwards ? -1 : +1;
-                trackPointIndex = trackPointIndex + iteration;
-                currentTrackPoint = self.trackPoints[trackPointIndex];
-                if ((!bBackwards && currentTrackPoint.meta.time <= destination.meta.time) ||
-                    (bBackwards && currentTrackPoint.meta.time >= destination.meta.time)) {
-                    self.currentMarker.setLatLng(L.latLng(currentTrackPoint.lat, currentTrackPoint.lng)).update();
-                    self.movingTimer = setTimeout(function () { move(bBackwards); }, 1);
-                }
-                else {
-                    self.isMoving = false;
-                }
-            })(bBackwards);
+        if (!self.currentMarker.isRunning()) {
+            var currentTrackPoint = self.findNearestTrackPoint(self.currentMarker.getLatLng().lat, self.currentMarker.getLatLng().lng);
+            var currentIndex = self.trackPoints.indexOf(currentTrackPoint);
+            var destinationIndex = self.trackPoints.indexOf(destination);
+            var track = self.trackPoints.slice(0);
+            if (currentIndex < destinationIndex) {
+                track = track.slice(currentIndex, destinationIndex + 1);
+            }
+            else {
+                track = track.slice(destinationIndex, currentIndex + 1).reverse();
+            }
+            self.currentMarker.initialize(track, 3000);
+            self.currentMarker.start();
         }
     };
     trackvizClass.prototype.stopMoving = function () {
         var self = this;
-        clearTimeout(self.movingTimer);
-        self.isMoving = false;
+        self.currentMarker.pause();
     };
     trackvizClass.prototype.highlightSubTrack = function (start, end) {
         var self = this;
@@ -97,7 +73,9 @@ var trackvizClass = (function () {
     };
     trackvizClass.prototype.findNearestTrackPoint = function (lat, lng) {
         var self = this;
-        var nearest;
+        var nearest = self.getTrackPointByLatlng(L.latLng(lat, lng));
+        if (typeof nearest !== "undefined")
+            return nearest;
         var shortestDistance = 9999;
         self.trackPoints.forEach(function (trackPoint) {
             var distance = helper.getDistance(lat, lng, trackPoint.lat, trackPoint.lng);

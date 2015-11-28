@@ -2,6 +2,7 @@
 /// <reference path="3rdparty/leaflet.d.ts" />
 /// <reference path="3rdparty/leaflet.label.d.ts" />
 /// <reference path="3rdparty/leaflet.gpx.d.ts" />
+/// <reference path="3rdparty/leaflet.MovingMarker.d.ts" />
 /// <reference path="definitions.ts" />
 /// <reference path="config.ts" />
 /// <reference path="helper.ts" />
