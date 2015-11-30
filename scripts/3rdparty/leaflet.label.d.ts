@@ -60,6 +60,7 @@ declare module L {
 		offset?: Point;
 		opacity?: number;
 		zoomAnimation?: boolean;
+		pane?: string;
 	}
 
 	export interface LabelStatic extends ClassStatic {
