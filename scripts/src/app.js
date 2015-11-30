@@ -634,6 +634,7 @@ L.GPX = L.FeatureGroup.extend({
     function configClass() {
         this.mapId = "map";
         this.gpxFile = "data/track.gpx";
+        this.movingDuration = 3000;
         this.boundOptions = {
             paddingBottomRight: L.point(200, 10),
             paddingTopLeft: L.point(10, 10),
@@ -699,7 +700,7 @@ var trackvizClass = (function () {
             self.gpxTrack.on('click', function (e) {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
-            self.currentMarker = L.Marker.movingMarker(self.trackPoints, 3000, {
+            self.currentMarker = L.Marker.movingMarker(self.trackPoints, conf.movingDuration, {
                 icon: L.ExtraMarkers.icon(conf.currentMarkerIconOptions),
             }).addTo(self.map);
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
@@ -718,7 +719,7 @@ var trackvizClass = (function () {
             else {
                 track = track.slice(destinationIndex, currentIndex + 1).reverse();
             }
-            self.currentMarker.initialize(track, 3000);
+            self.currentMarker.initialize(track, conf.movingDuration);
             self.currentMarker.start();
         }
     };

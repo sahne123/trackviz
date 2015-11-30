@@ -2,6 +2,7 @@ class configClass {
 	
 	public mapId: string;
 	public gpxFile: string;
+	public movingDuration: number;
 	
 	public boundOptions: L.Map.FitBoundsOptions;
 	public trackLabelOptions: L.LabelOptions;
@@ -12,6 +13,7 @@ class configClass {
 		
 		this.mapId = "map";
 		this.gpxFile = "data/track.gpx";
+		this.movingDuration = 3000;
 		
 		this.boundOptions = {
 			paddingBottomRight: L.point(200,10), 

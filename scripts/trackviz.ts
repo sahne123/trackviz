@@ -40,7 +40,7 @@ class trackvizClass {
 				self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
 			});
 			
-			self.currentMarker = L.Marker.movingMarker(self.trackPoints, 3000, 
+			self.currentMarker = L.Marker.movingMarker(self.trackPoints, conf.movingDuration, 
 			{
 				icon: L.ExtraMarkers.icon(conf.currentMarkerIconOptions),
 			}).addTo(self.map);
@@ -62,7 +62,7 @@ class trackvizClass {
 				track = track.slice(destinationIndex, currentIndex+1).reverse();
 			}
 			
-			self.currentMarker.initialize(track, 3000);
+			self.currentMarker.initialize(track, conf.movingDuration);
 			self.currentMarker.start();
 		}	
 	}
