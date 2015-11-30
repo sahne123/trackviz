@@ -4,7 +4,7 @@ var configClass = (function () {
         this.gpxFile = "data/track.gpx";
         this.enableMovingTooltip = true;
         this.enableHoverTooltip = true;
-        this.movingDuration = 3000;
+        this.movingDuration = 5000;
         this.boundOptions = {
             paddingBottomRight: L.point(200, 10),
             paddingTopLeft: L.point(10, 10),
@@ -12,7 +12,7 @@ var configClass = (function () {
         this.trackLabelIdentifier = ".trackTooltip";
         this.trackLabelOptions = {
             className: "trackTooltip",
-            direction: "auto",
+            direction: "right",
         };
         this.currentMarkerIconOptions = {
             icon: "glyphicon-screenshot",
@@ -22,7 +22,7 @@ var configClass = (function () {
         };
         this.currentMarkerLabelIdentifier = ".currentMarkerTooltip";
         this.currentMarkerLabelOptions = {
-            className: "currentMarkerTooltip hidden",
+            className: "leaflet-label-bottom currentMarkerTooltip animated hidden",
             direction: "right",
             pane: "popupPane",
             offset: L.point(0, 5),

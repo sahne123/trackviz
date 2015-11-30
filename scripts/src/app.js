@@ -636,7 +636,7 @@ L.GPX = L.FeatureGroup.extend({
         this.gpxFile = "data/track.gpx";
         this.enableMovingTooltip = true;
         this.enableHoverTooltip = true;
-        this.movingDuration = 3000;
+        this.movingDuration = 5000;
         this.boundOptions = {
             paddingBottomRight: L.point(200, 10),
             paddingTopLeft: L.point(10, 10),
@@ -644,7 +644,7 @@ L.GPX = L.FeatureGroup.extend({
         this.trackLabelIdentifier = ".trackTooltip";
         this.trackLabelOptions = {
             className: "trackTooltip",
-            direction: "auto",
+            direction: "right",
         };
         this.currentMarkerIconOptions = {
             icon: "glyphicon-screenshot",
@@ -654,7 +654,7 @@ L.GPX = L.FeatureGroup.extend({
         };
         this.currentMarkerLabelIdentifier = ".currentMarkerTooltip";
         this.currentMarkerLabelOptions = {
-            className: "currentMarkerTooltip hidden",
+            className: "leaflet-label-bottom currentMarkerTooltip animated hidden",
             direction: "right",
             pane: "popupPane",
             offset: L.point(0, 5),
@@ -726,13 +726,16 @@ var trackvizClass = (function () {
                 self.currentMarker.on('start', function () {
                     $(conf.trackLabelIdentifier).addClass("hidden");
                     var tooltip = $(conf.currentMarkerLabelIdentifier);
-                    tooltip.removeClass("hidden");
+                    if (tooltip.hasClass("hidden")) {
+                        tooltip.removeClass("hidden");
+                    }
+                    tooltip.removeClass("fadeOut");
                     (function update() {
                         var curLatLng = self.currentMarker.getLatLng();
                         // makes problems on crossing routes because the 
                         // nearest trackpoint is maybe not the last passed/next to pass
                         tooltip.html(self.getTooltipContent(curLatLng.lat, curLatLng.lng));
-                        tooltip.css("margin-left", Math.round(tooltip.width() / 2) * -1);
+                        tooltip.css("margin-left", Math.floor(tooltip.outerWidth() / 2) * -1);
                         if (self.currentMarker.isRunning()) {
                             updateCurrentMarkerTooltipTimer = setTimeout(function () {
                                 update();
@@ -741,7 +744,7 @@ var trackvizClass = (function () {
                     })();
                 });
                 self.currentMarker.on('end', function () {
-                    $(conf.currentMarkerLabelIdentifier).addClass("hidden");
+                    //$(conf.currentMarkerLabelIdentifier).addClass("fadeOut");
                     clearTimeout(updateCurrentMarkerTooltipTimer);
                 });
             }
