@@ -2,17 +2,24 @@ class configClass {
 	
 	public mapId: string;
 	public gpxFile: string;
+	public enableMovingTooltip: boolean;
+	public enableHoverTooltip: boolean;
 	public movingDuration: number;
 	
 	public boundOptions: L.Map.FitBoundsOptions;
+	public trackLabelIdentifier: string;
 	public trackLabelOptions: L.LabelOptions;
 	public subTrackOptions: L.PolylineOptions;
 	public currentMarkerIconOptions: L.ExtraMarkersOptions;
+	public currentMarkerLabelIdentifier: string;
+	public currentMarkerLabelOptions: L.LabelOptions;
 	
 	public constructor() {
 		
 		this.mapId = "map";
 		this.gpxFile = "data/track.gpx";
+		this.enableMovingTooltip = true;
+		this.enableHoverTooltip = true;
 		this.movingDuration = 3000;
 		
 		this.boundOptions = {
@@ -20,6 +27,7 @@ class configClass {
 			paddingTopLeft: L.point(10,10),
 		}; 
 		
+		this.trackLabelIdentifier = ".trackTooltip";
 		this.trackLabelOptions = {
 			className: "trackTooltip",
 			direction: "auto",
@@ -32,6 +40,15 @@ class configClass {
 			prefix: "glyphicon",
 			shape: "square",
 			markerColor: "green-dark",
+		}
+		
+		this.currentMarkerLabelIdentifier = ".currentMarkerTooltip";
+		this.currentMarkerLabelOptions = {
+			className: "currentMarkerTooltip hidden",
+			direction: "right",
+			pane: "popupPane",
+			offset: L.point(0, 5),
+			noHide: true,
 		}
 		
 		this.subTrackOptions = {

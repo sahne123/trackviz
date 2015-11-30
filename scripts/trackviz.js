@@ -7,25 +7,56 @@ var trackvizClass = (function () {
         self.gpxTrack = new L.GPX(gpxFile, { async: true });
         self.gpxTrack.on('loaded', function (e) {
             self.trackPoints = self.gpxTrack.get_trackpoints();
-            $.grep(self.gpxTrack.getLayers().shift().getLayers(), function (e) {
-                return typeof e.getLatLngs == "function";
-            }).shift().bindLabel("", conf.trackLabelOptions);
-            self.gpxTrack.on('mousemove', function (e) {
-                var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
-                //TODO: refactor time formating, take care of timezone support
-                var date = trackPoint.meta.time;
-                var month = date.getMonth() + 1;
-                $(".trackTooltip").html('<p>Time: ' +
-                    date.getDate() + '.' + month + '.' + date.getFullYear() +
-                    ' ' + date.getHours() + ':' + date.getMinutes() +
-                    '</p><p>Height: ' + trackPoint.meta.ele + '</p>');
-            });
+            if (conf.enableHoverTooltip) {
+                $.grep(self.gpxTrack.getLayers().shift().getLayers(), function (e) {
+                    return typeof e.getLatLngs == "function";
+                }).shift().bindLabel("", conf.trackLabelOptions);
+                self.gpxTrack.on('mousemove', function (e) {
+                    var trackTooltip = $(conf.trackLabelIdentifier);
+                    if (!self.currentMarker.isRunning()) {
+                        if (trackTooltip.hasClass("hidden")) {
+                            trackTooltip.removeClass("hidden");
+                        }
+                        trackTooltip.html(self.getTooltipContent(e.latlng.lat, e.latlng.lng));
+                    }
+                    else {
+                        if (!trackTooltip.hasClass("hidden")) {
+                            trackTooltip.addClass("hidden");
+                        }
+                    }
+                });
+            }
             self.gpxTrack.on('click', function (e) {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
             self.currentMarker = L.Marker.movingMarker(self.trackPoints, conf.movingDuration, {
                 icon: L.ExtraMarkers.icon(conf.currentMarkerIconOptions),
             }).addTo(self.map);
+            if (conf.enableMovingTooltip) {
+                self.currentMarker.bindLabel("", conf.currentMarkerLabelOptions);
+                var updateCurrentMarkerTooltipTimer;
+                self.currentMarker.on('start', function () {
+                    $(conf.trackLabelIdentifier).addClass("hidden");
+                    var tooltip = $(conf.currentMarkerLabelIdentifier);
+                    tooltip.removeClass("hidden");
+                    (function update() {
+                        var curLatLng = self.currentMarker.getLatLng();
+                        // makes problems on crossing routes because the 
+                        // nearest trackpoint is maybe not the last passed/next to pass
+                        tooltip.html(self.getTooltipContent(curLatLng.lat, curLatLng.lng));
+                        tooltip.css("margin-left", Math.round(tooltip.width() / 2) * -1);
+                        if (self.currentMarker.isRunning()) {
+                            updateCurrentMarkerTooltipTimer = setTimeout(function () {
+                                update();
+                            }, 100);
+                        }
+                    })();
+                });
+                self.currentMarker.on('end', function () {
+                    $(conf.currentMarkerLabelIdentifier).addClass("hidden");
+                    clearTimeout(updateCurrentMarkerTooltipTimer);
+                });
+            }
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
         }).addTo(self.map);
     }
@@ -33,17 +64,19 @@ var trackvizClass = (function () {
         var self = this;
         if (!self.currentMarker.isRunning()) {
             var currentTrackPoint = self.findNearestTrackPoint(self.currentMarker.getLatLng().lat, self.currentMarker.getLatLng().lng);
-            var currentIndex = self.trackPoints.indexOf(currentTrackPoint);
-            var destinationIndex = self.trackPoints.indexOf(destination);
-            var track = self.trackPoints.slice(0);
-            if (currentIndex < destinationIndex) {
-                track = track.slice(currentIndex, destinationIndex + 1);
+            if (currentTrackPoint != destination) {
+                var currentIndex = self.trackPoints.indexOf(currentTrackPoint);
+                var destinationIndex = self.trackPoints.indexOf(destination);
+                var track = self.trackPoints.slice(0);
+                if (currentIndex < destinationIndex) {
+                    track = track.slice(currentIndex, destinationIndex + 1);
+                }
+                else {
+                    track = track.slice(destinationIndex, currentIndex + 1).reverse();
+                }
+                self.currentMarker.initialize(track, conf.movingDuration);
+                self.currentMarker.start();
             }
-            else {
-                track = track.slice(destinationIndex, currentIndex + 1).reverse();
-            }
-            self.currentMarker.initialize(track, conf.movingDuration);
-            self.currentMarker.start();
         }
     };
     trackvizClass.prototype.stopMoving = function () {
@@ -61,6 +94,17 @@ var trackvizClass = (function () {
         self.subTrack = new L.FeatureGroup([
             new L.Polyline(track, conf.subTrackOptions)
         ]).bindLabel("", conf.trackLabelOptions).addTo(self.map);
+    };
+    trackvizClass.prototype.getTooltipContent = function (lat, lng) {
+        var self = this;
+        var trackPoint = self.findNearestTrackPoint(lat, lng);
+        var date = trackPoint.meta.time;
+        var month = date.getMonth() + 1;
+        //TODO: refactor time formating, take care of timezone support
+        return '<p>Time: ' +
+            date.getDate() + '.' + month + '.' + date.getFullYear() +
+            ' ' + date.getHours() + ':' + date.getMinutes() +
+            '</p><p>Height: ' + trackPoint.meta.ele + '</p>';
     };
     trackvizClass.prototype.getTrackPointByLatlng = function (latlng) {
         var self = this;
