@@ -53,6 +53,7 @@ class trackvizClass {
 				self.currentMarker.bindLabel("", conf.currentMarkerLabelOptions);
 				var updateCurrentMarkerTooltipTimer;
 				self.currentMarker.on('start', function() {
+					clearTimeout(updateCurrentMarkerTooltipTimer);
 					$(conf.trackLabelIdentifier).addClass("hidden");
 					var tooltip = $(conf.currentMarkerLabelIdentifier);
 					if(tooltip.hasClass("hidden")) {
@@ -73,8 +74,10 @@ class trackvizClass {
 					})();
 				});
 				self.currentMarker.on('end', function() {
-					//$(conf.currentMarkerLabelIdentifier).addClass("fadeOut");
 					clearTimeout(updateCurrentMarkerTooltipTimer);
+					updateCurrentMarkerTooltipTimer = setTimeout(function() {
+						$(conf.currentMarkerLabelIdentifier).addClass("fadeOut");
+					}, 1000);
 				});
 			}
 				

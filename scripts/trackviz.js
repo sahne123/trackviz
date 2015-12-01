@@ -36,6 +36,7 @@ var trackvizClass = (function () {
                 self.currentMarker.bindLabel("", conf.currentMarkerLabelOptions);
                 var updateCurrentMarkerTooltipTimer;
                 self.currentMarker.on('start', function () {
+                    clearTimeout(updateCurrentMarkerTooltipTimer);
                     $(conf.trackLabelIdentifier).addClass("hidden");
                     var tooltip = $(conf.currentMarkerLabelIdentifier);
                     if (tooltip.hasClass("hidden")) {
@@ -56,8 +57,10 @@ var trackvizClass = (function () {
                     })();
                 });
                 self.currentMarker.on('end', function () {
-                    //$(conf.currentMarkerLabelIdentifier).addClass("fadeOut");
                     clearTimeout(updateCurrentMarkerTooltipTimer);
+                    updateCurrentMarkerTooltipTimer = setTimeout(function () {
+                        $(conf.currentMarkerLabelIdentifier).addClass("fadeOut");
+                    }, 1000);
                 });
             }
             self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
