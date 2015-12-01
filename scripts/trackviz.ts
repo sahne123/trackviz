@@ -20,26 +20,6 @@ class trackvizClass {
 		self.gpxTrack.on('loaded', function(e){
 			self.trackPoints = self.gpxTrack.get_trackpoints();
 			
-			if( conf.enableHoverTooltip ) {
-				$.grep(self.gpxTrack.getLayers().shift().getLayers(), function(e: any){
-					return typeof e.getLatLngs == "function";
-				}).shift().bindLabel("", conf.trackLabelOptions);
-				
-				self.gpxTrack.on('mousemove', function(e:L.LeafletMouseEvent) {
-					var trackTooltip = $(conf.trackLabelIdentifier);
-					if(!self.currentMarker.isRunning()) {
-						if( trackTooltip.hasClass("hidden") ) {
-							trackTooltip.removeClass("hidden");
-						}
-						trackTooltip.html( self.getTooltipContent(e.latlng.lat, e.latlng.lng) );
-					} else {
-						if( !trackTooltip.hasClass("hidden") ) {
-							trackTooltip.addClass("hidden");
-						}
-					}
-				});
-			}
-			
 			self.gpxTrack.on('click', function(e:L.LeafletMouseEvent) {
 				self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
 			});
@@ -49,36 +29,12 @@ class trackvizClass {
 				icon: L.ExtraMarkers.icon(conf.currentMarkerIconOptions),
 			}).addTo(self.map);
 			
+			if( conf.enableHoverTooltip ) {
+				self.setHoverTooltip();
+			}
+			
 			if( conf.enableMovingTooltip ) {
-				self.currentMarker.bindLabel("", conf.currentMarkerLabelOptions);
-				var updateCurrentMarkerTooltipTimer;
-				self.currentMarker.on('start', function() {
-					clearTimeout(updateCurrentMarkerTooltipTimer);
-					$(conf.trackLabelIdentifier).addClass("hidden");
-					var tooltip = $(conf.currentMarkerLabelIdentifier);
-					if(tooltip.hasClass("hidden")) {
-						tooltip.removeClass("hidden");
-					}
-					tooltip.removeClass("fadeOut");
-					(function update() {
-						var curLatLng = self.currentMarker.getLatLng();
-						// makes problems on crossing routes because the 
-						// nearest trackpoint is maybe not the last passed/next to pass
-						tooltip.html( self.getTooltipContent(curLatLng.lat, curLatLng.lng) );
-						tooltip.css("margin-left", Math.floor(tooltip.outerWidth()/2) * -1);
-						if( self.currentMarker.isRunning() ) {
-							updateCurrentMarkerTooltipTimer = setTimeout(function(){
-								update();
-							}, 100);
-						}
-					})();
-				});
-				self.currentMarker.on('end', function() {
-					clearTimeout(updateCurrentMarkerTooltipTimer);
-					updateCurrentMarkerTooltipTimer = setTimeout(function() {
-						$(conf.currentMarkerLabelIdentifier).addClass("fadeOut");
-					}, 1000);
-				});
+				self.setMovingTooltip();
 			}
 				
 			self.map.fitBounds(self.gpxTrack.getBounds(), conf.boundOptions);
@@ -108,6 +64,60 @@ class trackvizClass {
 	public stopMoving() {
 		var self = this;
 		self.currentMarker.pause();
+	}
+	
+	private setHoverTooltip() {
+		var self = this;
+		$.grep(self.gpxTrack.getLayers().shift().getLayers(), function(e: any){
+			return typeof e.getLatLngs == "function";
+		}).shift().bindLabel("", conf.trackLabelOptions);
+		
+		self.gpxTrack.on('mousemove', function(e:L.LeafletMouseEvent) {
+			var trackTooltip = $(conf.trackLabelIdentifier);
+			if(!self.currentMarker.isRunning()) {
+				if( trackTooltip.hasClass("hidden") ) {
+					trackTooltip.removeClass("hidden");
+				}
+				trackTooltip.html( self.getTooltipContent(e.latlng.lat, e.latlng.lng) );
+			} else {
+				if( !trackTooltip.hasClass("hidden") ) {
+					trackTooltip.addClass("hidden");
+				}
+			}
+		});
+	}
+	
+	private setMovingTooltip() {
+		var self = this;
+		self.currentMarker.bindLabel("", conf.currentMarkerLabelOptions);
+		var updateCurrentMarkerTooltipTimer;
+		self.currentMarker.on('start', function() {
+			clearTimeout(updateCurrentMarkerTooltipTimer);
+			$(conf.trackLabelIdentifier).addClass("hidden");
+			var tooltip = $(conf.currentMarkerLabelIdentifier);
+			if(tooltip.hasClass("hidden")) {
+				tooltip.removeClass("hidden");
+			}
+			tooltip.removeClass("fadeOut");
+			(function update() {
+				var curLatLng = self.currentMarker.getLatLng();
+				// makes problems on crossing routes because the 
+				// nearest trackpoint is maybe not the last passed/next to pass
+				tooltip.html( self.getTooltipContent(curLatLng.lat, curLatLng.lng) );
+				tooltip.css("margin-left", Math.floor(tooltip.outerWidth()/2) * -1);
+				if( self.currentMarker.isRunning() ) {
+					updateCurrentMarkerTooltipTimer = setTimeout(function(){
+						update();
+					}, 100);
+				}
+			})();
+		});
+		self.currentMarker.on('end', function() {
+			clearTimeout(updateCurrentMarkerTooltipTimer);
+			updateCurrentMarkerTooltipTimer = setTimeout(function() {
+				$(conf.currentMarkerLabelIdentifier).addClass("fadeOut");
+			}, 1000);
+		});
 	}
 	
 	private highlightSubTrack(start: trackPoint, end: trackPoint) {
