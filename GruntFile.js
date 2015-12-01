@@ -4,6 +4,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -11,7 +12,7 @@ module.exports = function (grunt) {
         typescript: {
             base: {
                 src: ['scripts/*.ts'],
-                dest: 'scripts',
+                dest: 'scripts/src',
                 options: {
                     module: 'amd',
                     target: 'es5',
@@ -25,10 +26,10 @@ module.exports = function (grunt) {
                 },
                 files: [{
                     src: ['scripts/3rdparty/jquery-2.1.4.min.js', 'scripts/3rdparty/leaflet.js',
-                        'scripts/*/*.js',  
-                        'scripts/*.js', '!scripts/app.js', 'scripts/app.js',
-                        '!scripts/src/*'],
-                    dest: 'scripts/src/app.js'
+                        'scripts/3rdparty/*.js',  
+                        'scripts/src/*.js', '!scripts/src/app.js', 'scripts/src/app.js',
+                        '!scripts/src/scripts.js', '!scripts/src/scripts.min.js'],
+                    dest: 'scripts/src/scripts.js'
                 }]
             },
             css: {
@@ -43,8 +44,8 @@ module.exports = function (grunt) {
                 compress: true,
             },
             js: {
-                src: 'scripts/src/app.js',
-                dest: 'scripts/src/app.min.js'
+                src: 'scripts/src/scripts.js',
+                dest: 'scripts/src/scripts.min.js'
             }
         },
         cssmin: {
@@ -54,10 +55,13 @@ module.exports = function (grunt) {
                 }
             }
         },
+        clean: {
+            js: ['scripts/src/*', '!scripts/src/scripts.js'],
+        },
         watch: {
             js: {
                 files: ['scripts/*.ts', 'scripts/*/*.ts'],
-                tasks: ['typescript', 'concat:js', 'uglify:js']
+                tasks: ['typescript', 'concat:js', 'clean:js', 'uglify:js']
             },
             css: {
                 files: ['styles/*.css', 'styles/*/*.css', '!styles/src/*'],
