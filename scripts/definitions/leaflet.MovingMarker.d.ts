@@ -1,4 +1,5 @@
 /// <reference path="leaflet.d.ts" />
+
 declare module L {
 	export interface MovingMarker extends Marker {
 		initialize(latlng, duration, options?);

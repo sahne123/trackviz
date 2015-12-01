@@ -2,7 +2,7 @@
 
 class trackvizClass {
 	
-	public trackPoints: Array<trackPoint>;
+	public trackPoints: Array<L.trackPoint>;
 	
 	private currentMarker: L.MovingMarker;
 	private map: L.Map;
@@ -41,7 +41,7 @@ class trackvizClass {
 		}).addTo(self.map);
 	}
 	
-	public moveTo(destination: trackPoint) {
+	public moveTo(destination: L.trackPoint) {
 		var self = this;
 		if(!self.currentMarker.isRunning()) {
 			var currentTrackPoint = self.findNearestTrackPoint(self.currentMarker.getLatLng().lat, self.currentMarker.getLatLng().lng);
@@ -120,7 +120,7 @@ class trackvizClass {
 		});
 	}
 	
-	private highlightSubTrack(start: trackPoint, end: trackPoint) {
+	private highlightSubTrack(start: L.trackPoint, end: L.trackPoint) {
 		var self = this;
 		var startIndex = self.trackPoints.indexOf(start);
 		var endIndex = self.trackPoints.indexOf(end);

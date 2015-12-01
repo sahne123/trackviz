@@ -5116,14 +5116,13 @@ var trackvizClass = (function () {
     };
     return trackvizClass;
 })();
-;/// <reference path="3rdparty/jquery.d.ts" />
-/// <reference path="3rdparty/leaflet.d.ts" />
-/// <reference path="3rdparty/leaflet.label.d.ts" />
-/// <reference path="3rdparty/leaflet.gpx.d.ts" />
-/// <reference path="3rdparty/leaflet.MovingMarker.d.ts" />
-/// <reference path="3rdparty/leaflet.extra-markers.d.ts" />
-/// <reference path="3rdparty/moment-timezone.d.ts" />
-/// <reference path="definitions.d.ts" />
+;/// <reference path="definitions/jquery.d.ts" />
+/// <reference path="definitions/leaflet.d.ts" />
+/// <reference path="definitions/leaflet.label.d.ts" />
+/// <reference path="definitions/leaflet.gpx.d.ts" />
+/// <reference path="definitions/leaflet.MovingMarker.d.ts" />
+/// <reference path="definitions/leaflet.extra-markers.d.ts" />
+/// <reference path="definitions/moment-timezone.d.ts" />
 /// <reference path="config.ts" />
 /// <reference path="helper.ts" />
 /// <reference path="trackviz.ts" />
