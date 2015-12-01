@@ -140,6 +140,8 @@ class trackvizClass {
 		var date = trackPoint.meta.time;
 		var month = date.getMonth()+1;
 		//TODO: refactor time formating, take care of timezone support
+		/*console.log( moment(date).format('LLLL') ); 
+		console.log( moment(date).tz('America/Costa_Rica').format('LLLL') );*/
 		return '<p>Time: ' + 
 			date.getDate() + '.' + month + '.' + date.getFullYear() + 
 			' ' + date.getHours() + ':' + date.getMinutes() + 

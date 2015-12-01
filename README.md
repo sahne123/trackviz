@@ -6,6 +6,8 @@ visualization of tracks
 - jQuery (https://github.com/jquery/jquery)
 - bootstrap (https://github.com/twbs/bootstrap)
 - animate.css (https://github.com/daneden/animate.css)
+- moment (https://github.com/moment/moment)
+- moment-timezone (https://github.com/moment/moment-timezone)
 - leaflet (https://github.com/Leaflet/Leaflet)
 - leaflet.label (https://github.com/Leaflet/Leaflet.label)
 - modified leaflet-gpx from Owncloud GPX Viewer (https://github.com/Frank1604/files_gpxviewer_extended) based on leaflet-gpx (https://github.com/mpetazzoni/leaflet-gpx) 

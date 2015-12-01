@@ -25,7 +25,7 @@ module.exports = function (grunt) {
                     separator: ';',
                 },
                 files: [{
-                    src: ['scripts/3rdparty/jquery-2.1.4.min.js', 'scripts/3rdparty/leaflet.js',
+                    src: ['scripts/3rdparty/jquery-2.1.4.min.js', 'scripts/3rdparty/leaflet.js', 'scripts/3rdparty/moment.js',
                         'scripts/3rdparty/*.js',  
                         'scripts/src/*.js', '!scripts/src/app.js', 'scripts/src/app.js',
                         '!scripts/src/scripts.js', '!scripts/src/scripts.min.js'],

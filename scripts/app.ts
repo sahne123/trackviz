@@ -4,6 +4,7 @@
 /// <reference path="3rdparty/leaflet.gpx.d.ts" />
 /// <reference path="3rdparty/leaflet.MovingMarker.d.ts" />
 /// <reference path="3rdparty/leaflet.extra-markers.d.ts" />
+/// <reference path="3rdparty/moment-timezone.d.ts" />
 /// <reference path="definitions.d.ts" />
 /// <reference path="config.ts" />
 /// <reference path="helper.ts" />
