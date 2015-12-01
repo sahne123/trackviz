@@ -4917,6 +4917,7 @@ L.GPX = L.FeatureGroup.extend({
     function configClass() {
         this.mapId = "map";
         this.gpxFile = "data/track.gpx";
+        this.timezone = 'America/Costa_Rica';
         this.enableMovingTooltip = true;
         this.enableHoverTooltip = true;
         this.movingDuration = 5000;
@@ -5083,15 +5084,10 @@ var trackvizClass = (function () {
     trackvizClass.prototype.getTooltipContent = function (lat, lng) {
         var self = this;
         var trackPoint = self.findNearestTrackPoint(lat, lng);
-        var date = trackPoint.meta.time;
-        var month = date.getMonth() + 1;
-        //TODO: refactor time formating, take care of timezone support
-        /*console.log( moment(date).format('LLLL') );
-        console.log( moment(date).tz('America/Costa_Rica').format('LLLL') );*/
-        return '<p>Time: ' +
-            date.getDate() + '.' + month + '.' + date.getFullYear() +
-            ' ' + date.getHours() + ':' + date.getMinutes() +
-            '</p><p>Height: ' + trackPoint.meta.ele + '</p>';
+        var date = moment(trackPoint.meta.time).tz(conf.timezone);
+        return '<i class="glyphicon glyphicon-calendar" ></i> ' + date.format('L') + '<br/>' +
+            '<i class="glyphicon glyphicon-time" ></i> ' + date.format('HH:mm:ss') + '<br/>' +
+            '<i class="glyphicon glyphicon-dashboard" ></i> ' + Math.round(trackPoint.meta.ele) + 'm';
     };
     trackvizClass.prototype.getTrackPointByLatlng = function (latlng) {
         var self = this;

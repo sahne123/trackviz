@@ -2,6 +2,7 @@ class configClass {
 	
 	public mapId: string;
 	public gpxFile: string;
+	public timezone: string;
 	public enableMovingTooltip: boolean;
 	public enableHoverTooltip: boolean;
 	public movingDuration: number;
@@ -18,6 +19,7 @@ class configClass {
 		
 		this.mapId = "map";
 		this.gpxFile = "data/track.gpx";
+		this.timezone = 'America/Costa_Rica';
 		this.enableMovingTooltip = true;
 		this.enableHoverTooltip = true;
 		this.movingDuration = 5000;
