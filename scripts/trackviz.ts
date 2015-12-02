@@ -101,6 +101,7 @@ class trackvizClass {
 			tooltip.removeClass("fadeOut");
 			(function update() {
 				var curLatLng = self.currentMarker.getLatLng();
+				// TODO:
 				// makes problems on crossing routes because the 
 				// nearest trackpoint is maybe not the last passed/next to pass
 				tooltip.html( self.getTooltipContent(curLatLng.lat, curLatLng.lng) );

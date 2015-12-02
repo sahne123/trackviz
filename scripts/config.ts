@@ -33,8 +33,7 @@ class configClass {
 		this.trackLabelOptions = {
 			className: "trackTooltip",
 			direction: "right",
-			/* noHide: true, */
-			/* offset: []  */
+			pane: "popupPane",
 		};
 		
 		this.currentMarkerIconOptions = {
