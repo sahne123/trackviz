@@ -10,7 +10,6 @@ class trackvizClass {
 	private gpxTrack;
 	private trackPolyline: L.Polyline;
 	private isMoving: boolean = false;
-	private movingTimer: number;
 	private subTrack: L.LayerGroup<any>;
 	
 	public constructor(map: L.Map, gpxFile: string) {
@@ -114,6 +113,14 @@ class trackvizClass {
 		var self = this;
 		self.mouseMarker.addTo(self.map);
 		
+		self.trackPolyline.on('mouseover', function(e: L.LeafletMouseEvent){
+			if( !self.currentMarker.isRunning() ) {
+				self.mouseMarker.setOpacity(1);
+			}
+		});
+		self.trackPolyline.on('mouseout', function(e: L.LeafletMouseEvent){
+			self.mouseMarker.setOpacity(0);
+		});
 		self.mouseMarker.on('mouseover', function(e: L.LeafletMouseEvent){
 			self.trackPolyline.fire('mouseover', e);
 		});
@@ -126,11 +133,12 @@ class trackvizClass {
 		});
 		self.mouseMarker.on('mouseout', function(e: L.LeafletMouseEvent){
 			self.trackPolyline.fire('mouseout', e);
-			self.mouseMarker.setOpacity(0);
 		});
 		self.mouseMarker.on('updatePos', function(latlng: L.LatLng){
-			self.mouseMarker.setOpacity(1);
-			self.mouseMarker.setLatLng(latlng);
+			if( !self.currentMarker.isRunning() ) {
+				self.mouseMarker.setLatLng(latlng);
+				self.mouseMarker.setOpacity(1);
+			}
 		});
 	}
 	
