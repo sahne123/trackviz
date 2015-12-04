@@ -4984,7 +4984,7 @@ var trackvizClass = (function () {
             self.trackPolyline = $.grep(self.gpxTrack.getLayers().shift().getLayers(), function (e) {
                 return typeof e.getLatLngs == "function";
             }).shift();
-            self.gpxTrack.on('click', function (e) {
+            self.trackPolyline.on('click', function (e) {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
             self.currentMarker = L.Marker.movingMarker(self.trackPoints, conf.movingDuration, {
@@ -5026,9 +5026,16 @@ var trackvizClass = (function () {
         var self = this;
         self.trackPolyline.bindLabel("", conf.trackLabelOptions);
         self.mouseMarker = L.marker(self.trackPoints[0], {
-            icon: L.divIcon({
-                html: '#',
+            icon: L.ExtraMarkers.icon({
+                icon: "glyphicon-flag",
+                prefix: "glyphicon",
+                shape: "penta",
+                markerColor: "red",
             }),
+            /*icon: L.divIcon({
+                iconSize: L.point(5,5),
+                html: '#',
+            }),*/
             opacity: 0,
         });
         if (conf.enableMouseMarker) {
@@ -5038,6 +5045,7 @@ var trackvizClass = (function () {
             var trackTooltip = $(conf.trackLabelIdentifier);
             var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
             if (!self.currentMarker.isRunning()) {
+                self.mouseMarker.fire('updatePos', trackPoint);
                 if (trackTooltip.hasClass("hidden")) {
                     trackTooltip.removeClass("hidden");
                 }
@@ -5052,14 +5060,24 @@ var trackvizClass = (function () {
     };
     trackvizClass.prototype.setMouseMarker = function () {
         var self = this;
-        self.mouseMarker.on('mouseover', function () {
-            self.trackPolyline.fire('mouseover');
+        self.mouseMarker.addTo(self.map);
+        self.mouseMarker.on('mouseover', function (e) {
+            self.trackPolyline.fire('mouseover', e);
         });
-        self.mouseMarker.on('mousemove', function () {
-            self.trackPolyline.fire('mousemove');
+        self.mouseMarker.on('click', function (e) {
+            self.trackPolyline.fire('click', e);
+            self.mouseMarker.setOpacity(0);
         });
-        self.mouseMarker.on('mouseout', function () {
-            self.trackPolyline.fire('mouseout');
+        self.mouseMarker.on('mousemove', function (e) {
+            self.trackPolyline.fire('mousemove', e);
+        });
+        self.mouseMarker.on('mouseout', function (e) {
+            self.trackPolyline.fire('mouseout', e);
+            self.mouseMarker.setOpacity(0);
+        });
+        self.mouseMarker.on('updatePos', function (latlng) {
+            self.mouseMarker.setOpacity(1);
+            self.mouseMarker.setLatLng(latlng);
         });
     };
     trackvizClass.prototype.setMovingTooltip = function () {
