@@ -3,8 +3,11 @@ class configClass {
 	public mapId: string;
 	public gpxFile: string;
 	public timezone: string;
+	
 	public enableMovingTooltip: boolean;
 	public enableHoverTooltip: boolean;
+	public enableMouseMarker: boolean;
+	
 	public movingDuration: number;
 	
 	public boundOptions: L.Map.FitBoundsOptions;
@@ -20,8 +23,11 @@ class configClass {
 		this.mapId = "map";
 		this.gpxFile = "data/track.gpx";
 		this.timezone = 'America/Costa_Rica';
+		
 		this.enableMovingTooltip = true;
 		this.enableHoverTooltip = true;
+		this.enableMouseMarker = true; /* works only if enableHoverTooltip = true */
+		
 		this.movingDuration = 5000;
 		
 		this.boundOptions = {

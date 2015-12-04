@@ -5,8 +5,10 @@ class trackvizClass {
 	public trackPoints: Array<L.trackPoint>;
 	
 	private currentMarker: L.MovingMarker;
+	private mouseMarker: L.Marker;
 	private map: L.Map;
 	private gpxTrack;
+	private trackPolyline: L.Polyline;
 	private isMoving: boolean = false;
 	private movingTimer: number;
 	private subTrack: L.LayerGroup<any>;
@@ -19,6 +21,9 @@ class trackvizClass {
 		
 		self.gpxTrack.on('loaded', function(e){
 			self.trackPoints = self.gpxTrack.get_trackpoints();
+			self.trackPolyline = $.grep(self.gpxTrack.getLayers().shift().getLayers(), function(e: any){
+				return typeof e.getLatLngs == "function";
+			}).shift();
 			
 			self.gpxTrack.on('click', function(e:L.LeafletMouseEvent) {
 				self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
@@ -68,11 +73,20 @@ class trackvizClass {
 	
 	private setHoverTooltip() {
 		var self = this;
-		$.grep(self.gpxTrack.getLayers().shift().getLayers(), function(e: any){
-			return typeof e.getLatLngs == "function";
-		}).shift().bindLabel("", conf.trackLabelOptions);
+		self.trackPolyline.bindLabel("", conf.trackLabelOptions);
 		
-		self.gpxTrack.on('mousemove', function(e:L.LeafletMouseEvent) {
+		self.mouseMarker = L.marker(self.trackPoints[0],{
+			icon: L.divIcon({
+				html: '#',
+			}),
+			opacity: 0,
+		});
+		
+		if( conf.enableMouseMarker ) {
+			self.setMouseMarker();
+		}
+		
+		self.trackPolyline.on('mousemove', function(e:L.LeafletMouseEvent) {
 			var trackTooltip = $(conf.trackLabelIdentifier);
 			var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
 			if(!self.currentMarker.isRunning()) {
@@ -85,6 +99,19 @@ class trackvizClass {
 					trackTooltip.addClass("hidden");
 				}
 			}
+		});
+	}
+	
+	private setMouseMarker() {
+		var self = this;
+		self.mouseMarker.on('mouseover', function(){
+			self.trackPolyline.fire('mouseover');
+		});
+		self.mouseMarker.on('mousemove', function(){
+			self.trackPolyline.fire('mousemove');
+		});
+		self.mouseMarker.on('mouseout', function(){
+			self.trackPolyline.fire('mouseout');
 		});
 	}
 	

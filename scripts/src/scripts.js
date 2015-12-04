@@ -4920,6 +4920,7 @@ L.GPX = L.FeatureGroup.extend({
         this.timezone = 'America/Costa_Rica';
         this.enableMovingTooltip = true;
         this.enableHoverTooltip = true;
+        this.enableMouseMarker = true; /* works only if enableHoverTooltip = true */
         this.movingDuration = 5000;
         this.boundOptions = {
             paddingBottomRight: L.point(200, 10),
@@ -4980,6 +4981,9 @@ var trackvizClass = (function () {
         self.gpxTrack = new L.GPX(gpxFile, { async: true });
         self.gpxTrack.on('loaded', function (e) {
             self.trackPoints = self.gpxTrack.get_trackpoints();
+            self.trackPolyline = $.grep(self.gpxTrack.getLayers().shift().getLayers(), function (e) {
+                return typeof e.getLatLngs == "function";
+            }).shift();
             self.gpxTrack.on('click', function (e) {
                 self.moveTo(self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng));
             });
@@ -5020,10 +5024,17 @@ var trackvizClass = (function () {
     };
     trackvizClass.prototype.setHoverTooltip = function () {
         var self = this;
-        $.grep(self.gpxTrack.getLayers().shift().getLayers(), function (e) {
-            return typeof e.getLatLngs == "function";
-        }).shift().bindLabel("", conf.trackLabelOptions);
-        self.gpxTrack.on('mousemove', function (e) {
+        self.trackPolyline.bindLabel("", conf.trackLabelOptions);
+        self.mouseMarker = L.marker(self.trackPoints[0], {
+            icon: L.divIcon({
+                html: '#',
+            }),
+            opacity: 0,
+        });
+        if (conf.enableMouseMarker) {
+            self.setMouseMarker();
+        }
+        self.trackPolyline.on('mousemove', function (e) {
             var trackTooltip = $(conf.trackLabelIdentifier);
             var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
             if (!self.currentMarker.isRunning()) {
@@ -5037,6 +5048,18 @@ var trackvizClass = (function () {
                     trackTooltip.addClass("hidden");
                 }
             }
+        });
+    };
+    trackvizClass.prototype.setMouseMarker = function () {
+        var self = this;
+        self.mouseMarker.on('mouseover', function () {
+            self.trackPolyline.fire('mouseover');
+        });
+        self.mouseMarker.on('mousemove', function () {
+            self.trackPolyline.fire('mousemove');
+        });
+        self.mouseMarker.on('mouseout', function () {
+            self.trackPolyline.fire('mouseout');
         });
     };
     trackvizClass.prototype.setMovingTooltip = function () {
