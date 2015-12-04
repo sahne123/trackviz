@@ -74,11 +74,12 @@ class trackvizClass {
 		
 		self.gpxTrack.on('mousemove', function(e:L.LeafletMouseEvent) {
 			var trackTooltip = $(conf.trackLabelIdentifier);
+			var trackPoint = self.findNearestTrackPoint(e.latlng.lat, e.latlng.lng);
 			if(!self.currentMarker.isRunning()) {
 				if( trackTooltip.hasClass("hidden") ) {
 					trackTooltip.removeClass("hidden");
 				}
-				trackTooltip.html( self.getTooltipContent(e.latlng.lat, e.latlng.lng) );
+				trackTooltip.html( self.getTooltipContent(trackPoint) );
 			} else {
 				if( !trackTooltip.hasClass("hidden") ) {
 					trackTooltip.addClass("hidden");
@@ -101,10 +102,11 @@ class trackvizClass {
 			tooltip.removeClass("fadeOut");
 			(function update() {
 				var curLatLng = self.currentMarker.getLatLng();
+				var trackPoint = self.findNearestTrackPoint(curLatLng.lat, curLatLng.lng);
 				// TODO:
 				// makes problems on crossing routes because the 
 				// nearest trackpoint is maybe not the last passed/next to pass
-				tooltip.html( self.getTooltipContent(curLatLng.lat, curLatLng.lng) );
+				tooltip.html( self.getTooltipContent(trackPoint) );
 				tooltip.css("margin-left", Math.floor(tooltip.outerWidth()/2) * -1);
 				if( self.currentMarker.isRunning() ) {
 					updateCurrentMarkerTooltipTimer = setTimeout(function(){
@@ -135,9 +137,8 @@ class trackvizClass {
 		]).bindLabel("", conf.trackLabelOptions).addTo(self.map);
 	}
 	
-	private getTooltipContent(lat: number, lng: number) {
+	private getTooltipContent(trackPoint: L.trackPoint) {
 		var self = this;
-		var trackPoint = self.findNearestTrackPoint(lat, lng);
 		var date = moment(trackPoint.meta.time).tz(conf.timezone);
 		
 		return 	'<i class="glyphicon glyphicon-calendar" ></i> ' + date.format('L') + '<br/>' +
